@@ -1,0 +1,341 @@
+@import "tailwindcss";
+
+/* ─── BDO Grotesk (original font from Webflow CDN) ─── */
+@font-face {
+  font-family: Bdogrotesk;
+  src: url("https://cdn.prod.website-files.com/6a71a3264c012e91819a93fc/6a71cdde200be9977dfc7a15_BDOGrotesk-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: Bdogrotesk;
+  src: url("https://cdn.prod.website-files.com/6a71a3264c012e91819a93fc/6a71cdde808e64bec43afab3_BDOGrotesk-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: Bdogrotesk;
+  src: url("https://cdn.prod.website-files.com/6a71a3264c012e91819a93fc/6a71cdde24d51f690a25bdc6_BDOGrotesk-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: Bdogrotesk;
+  src: url("https://cdn.prod.website-files.com/6a71a3264c012e91819a93fc/6a71cddeb6e361fe1c4cb0b7_BDOGrotesk-Light.woff2") format("woff2");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --bg: #F5F2F3;
+  --text: #1F1F1F;
+  --dark-bg: #0F0F0F;
+  --dark-text: #F5F2F3;
+  --white: #F4F4F4;
+}
+
+html {
+  scroll-behavior: auto; /* Lenis handles smooth scroll */
+  background-color: var(--bg);
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: Bdogrotesk, Arial, sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Container ─── */
+.u-container {
+  width: 100%;
+  max-width: 1440px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+/* ─── Marquee / Stats strip ─── */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.marquee-track {
+  display: flex;
+  white-space: nowrap;
+  animation: marquee 22s linear infinite;
+  width: max-content;
+}
+.marquee-track-slow {
+  display: flex;
+  white-space: nowrap;
+  animation: marquee 35s linear infinite;
+  width: max-content;
+}
+
+/* ─── Scroll Reveal ─── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+}
+.reveal.visible {
+  animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ─── Accordion ─── */
+.accordion-body {
+  overflow: hidden;
+  transition: max-height 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ─── Typography utilities ─── */
+.u-copy-xxxs {
+  font-size: clamp(9px, 0.75vw, 11px);
+  letter-spacing: 0.06em;
+  line-height: 1.6;
+  font-weight: 400;
+}
+.u-text-transform-uppercase {
+  text-transform: uppercase;
+}
+.u-h3 {
+  font-size: clamp(22px, 2.4vw, 40px);
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+/* ─── Hero loading animation ─── */
+@keyframes ldrIn  { to { opacity: 1; transform: translateY(0); } }
+@keyframes ldrOut { to { opacity: 0; transform: translateY(-60px); } }
+
+/* ─── Services accordion ─── */
+.mwg035-li {
+  border-top: 1px solid #333;
+  overflow: hidden;
+}
+.mwg035-medias {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.mwg035-media {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+}
+
+/* ─── Nav link hover (duplicate text trick) ─── */
+.bold-nav-link {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  flex-direction: column;
+  height: 1.2em;
+}
+.bold-nav-link span {
+  display: block;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  line-height: 1.2em;
+}
+.bold-nav-link span:last-child {
+  position: absolute;
+  top: 1.2em;
+}
+.bold-nav-link:hover span {
+  transform: translateY(-1.2em);
+}
+
+/* ─── Case slide image ─── */
+.case-content_image {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+  border-radius: 0.5rem;
+}
+
+/* ─── Footer form inputs ─── */
+.contact-input {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(241, 241, 241, 0.25);
+  outline: none;
+  padding: 12px 0;
+  font-size: clamp(14px, 1.1vw, 18px);
+  font-family: inherit;
+  color: #f1f1f1;
+  width: 100%;
+  transition: border-color 0.3s ease;
+}
+.contact-input::placeholder {
+  color: rgba(241, 241, 241, 0.35);
+}
+.contact-input:focus {
+  border-bottom-color: #f1f1f1;
+}
+
+/* ─── Section divider (mwg032) ─── */
+.mwg032 {
+  position: relative;
+  color: var(--text);
+}
+.mwg032.dark {
+  color: var(--dark-text);
+}
+.mwg032-pin-height {
+  height: 400vh;
+  position: relative;
+}
+.mwg032-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  overflow: hidden;
+  position: sticky;
+  top: 0;
+}
+.mwg032-svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.mwg032-textpath {
+  fill: currentColor;
+  font-size: 9vw;
+  font-family: Bdogrotesk, Arial, sans-serif;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+/* ─── mwg044-header (section label marquee) ─── */
+.mwg044-header {
+  text-transform: uppercase;
+  width: 100%;
+  max-width: 1440px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: clamp(10px, 0.85vw, 13px);
+  letter-spacing: 0.1em;
+  font-weight: 400;
+}
+.mwg044-header.inner {
+  text-align: center;
+  margin-top: 6rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+/* ─── Process cards ─── */
+.mwg043-card {
+  background-color: #fff;
+  border-radius: 1.25rem;
+  width: 22.5rem;
+  min-height: 28rem;
+  padding: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 4px 8px 40px rgba(0,0,0,0.12);
+  flex-shrink: 0;
+}
+
+/* ─── Responsive: mobile ─── */
+@media (max-width: 767px) {
+  .mwg032-pin-height {
+    height: 150vh;
+  }
+  .mwg032-textpath {
+    font-size: 14vw;
+  }
+}
+
+/* ─── Button ─── */
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 22px;
+  border: 1px solid currentColor;
+  border-radius: 100px;
+  font-size: clamp(11px, 0.85vw, 13px);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  cursor: pointer;
+  background: transparent;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+.btn-outline:hover {
+  background: var(--text);
+  color: var(--bg);
+}
+.btn-outline-dark {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 22px;
+  border: 1px solid rgba(241,241,241,0.3);
+  border-radius: 100px;
+  font-size: clamp(11px, 0.85vw, 13px);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  cursor: pointer;
+  background: transparent;
+  color: #f1f1f1;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+.btn-outline-dark:hover {
+  background: #f1f1f1;
+  color: #0f0f0f;
+}
+
+/* ─── Scaling video section ─── */
+.sv-bar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1.5rem;
+  background: rgba(15,15,15,0.8);
+  backdrop-filter: blur(8px);
+  width: 100%;
+  transition: opacity 0.3s ease;
+}
+
+/* ─── Lenis ─── */
+html.lenis, html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
