@@ -6,9 +6,11 @@ import { useAdminAuth } from '@/lib/useAdminAuth';
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const { status, login } = useAdminAuth();
+  const { status, login, verifyOtp } = useAdminAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [otp, setOtp] = useState('');
+  const [step, setStep] = useState<'credentials' | 'otp'>('credentials');
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -18,11 +20,24 @@ export default function AdminLoginPage() {
     }
   }, [status, router]);
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleCredentialsSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
     setSubmitting(true);
     const result = await login(email.trim(), password);
+    setSubmitting(false);
+    if (result.ok) {
+      setStep('otp');
+    } else {
+      setError(result.message);
+    }
+  };
+
+  const handleOtpSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setSubmitting(true);
+    const result = await verifyOtp(email.trim(), otp.trim());
     setSubmitting(false);
     if (result.ok) {
       router.replace('/admin/dashboard');
@@ -45,7 +60,7 @@ export default function AdminLoginPage() {
       }}
     >
       <form
-        onSubmit={handleSubmit}
+        onSubmit={step === 'credentials' ? handleCredentialsSubmit : handleOtpSubmit}
         style={{
           width: '100%',
           maxWidth: 360,
@@ -65,31 +80,55 @@ export default function AdminLoginPage() {
         >
           NBNZIA
         </p>
-        <h1 style={{ fontSize: 24, fontWeight: 500, marginBottom: '2rem' }}>Admin sign in</h1>
+        <h1 style={{ fontSize: 24, fontWeight: 500, marginBottom: '2rem' }}>
+          {step === 'credentials' ? 'Admin sign in' : 'Enter OTP'}
+        </h1>
 
-        <label style={{ display: 'block', fontSize: 12, marginBottom: 6, color: 'rgba(245,242,243,0.6)' }}>
-          Email
-        </label>
-        <input
-          type="email"
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          disabled={submitting}
-          style={inputStyle}
-        />
+        {step === 'credentials' ? (
+          <>
+            <label style={{ display: 'block', fontSize: 12, marginBottom: 6, color: 'rgba(245,242,243,0.6)' }}>
+              Email
+            </label>
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              disabled={submitting}
+              style={inputStyle}
+            />
 
-        <label style={{ display: 'block', fontSize: 12, margin: '1.25rem 0 6px', color: 'rgba(245,242,243,0.6)' }}>
-          Password
-        </label>
-        <input
-          type="password"
-          required
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          disabled={submitting}
-          style={inputStyle}
-        />
+            <label style={{ display: 'block', fontSize: 12, margin: '1.25rem 0 6px', color: 'rgba(245,242,243,0.6)' }}>
+              Password
+            </label>
+            <input
+              type="password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              disabled={submitting}
+              style={inputStyle}
+            />
+          </>
+        ) : (
+          <>
+            <p style={{ fontSize: 13, color: 'rgba(245,242,243,0.6)', marginBottom: '1rem' }}>
+              We sent a 6-digit code to {email}
+            </p>
+            <label style={{ display: 'block', fontSize: 12, marginBottom: 6, color: 'rgba(245,242,243,0.6)' }}>
+              OTP
+            </label>
+            <input
+              type="text"
+              required
+              maxLength={6}
+              value={otp}
+              onChange={(e) => setOtp(e.target.value)}
+              disabled={submitting}
+              style={inputStyle}
+            />
+          </>
+        )}
 
         {error && <p style={{ color: '#ff8a8a', fontSize: 13, marginTop: '1rem' }}>{error}</p>}
 
@@ -112,7 +151,7 @@ export default function AdminLoginPage() {
             opacity: submitting ? 0.6 : 1,
           }}
         >
-          {submitting ? 'Signing in…' : 'Sign in'}
+          {submitting ? 'Please wait…' : step === 'credentials' ? 'Send OTP' : 'Verify & Sign in'}
         </button>
       </form>
     </div>

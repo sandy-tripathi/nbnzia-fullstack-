@@ -1,4 +1,4 @@
-const nodemailer = require('nodemailer');
+const nodemailer = require("nodemailer");
 
 /**
  * Best-effort email notification for new contact submissions.
@@ -7,11 +7,14 @@ const nodemailer = require('nodemailer');
  * MongoDB regardless of email delivery).
  */
 async function sendContactNotification(submission) {
-  const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, CONTACT_NOTIFY_EMAIL } = process.env;
+  const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, CONTACT_NOTIFY_EMAIL } =
+    process.env;
 
   if (!SMTP_HOST || !SMTP_USER || !SMTP_PASS || !CONTACT_NOTIFY_EMAIL) {
-    console.log('[email] SMTP not configured — skipping notification email (submission still saved).');
-    return { sent: false, reason: 'not_configured' };
+    console.log(
+      "[email] SMTP not configured — skipping notification email (submission still saved).",
+    );
+    return { sent: false, reason: "not_configured" };
   }
 
   try {
@@ -23,19 +26,80 @@ async function sendContactNotification(submission) {
     });
 
     await transporter.sendMail({
-      from: `"NBNZIA Website" <${SMTP_USER}>`,
+      from: `"NBNZIA Admin" <${process.env.EMAIL_FROM}>`,
       to: CONTACT_NOTIFY_EMAIL,
       replyTo: submission.email,
       subject: `New lead: ${submission.name}`,
       text: `From: ${submission.name} <${submission.email}>\n\n${submission.message}`,
-      html: `<p><strong>From:</strong> ${submission.name} (${submission.email})</p><p>${submission.message.replace(/\n/g, '<br/>')}</p>`,
+      html: `<p><strong>From:</strong> ${submission.name} (${submission.email})</p><p>${submission.message.replace(/\n/g, "<br/>")}</p>`,
     });
 
     return { sent: true };
   } catch (err) {
-    console.error('[email] Failed to send notification:', err.message);
-    return { sent: false, reason: 'send_failed' };
+    console.error("[email] Failed to send notification:", err.message);
+    return { sent: false, reason: "send_failed" };
   }
 }
 
-module.exports = { sendContactNotification };
+async function sendOtpEmail(toEmail, otp) {
+  const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS } = process.env;
+
+  if (!SMTP_HOST || !SMTP_USER || !SMTP_PASS) {
+    console.log(`[email] SMTP not configured — OTP for ${toEmail} is: ${otp}`);
+    return { sent: false, reason: "not_configured" };
+  }
+
+  try {
+    const transporter = nodemailer.createTransport({
+      host: SMTP_HOST,
+      port: Number(SMTP_PORT) || 587,
+      secure: Number(SMTP_PORT) === 465,
+      auth: { user: SMTP_USER, pass: SMTP_PASS },
+    });
+
+    await transporter.sendMail({
+      from: `"NBNZIA Admin" <${process.env.EMAIL_FROM}>`,
+      to: toEmail,
+      subject: "Your Login OTP",
+      text: `Your OTP is: ${otp}. It expires in 5 minutes.`,
+      html: `<p>Your OTP is: <strong>${otp}</strong></p><p>It expires in 5 minutes.</p>`,
+    });
+
+    return { sent: true };
+  } catch (err) {
+    console.error("[email] Failed to send OTP:", err.message);
+    return { sent: false, reason: "send_failed" };
+  }
+}
+async function sendCustomEmail({ to, subject, message }) {
+  const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS } = process.env;
+
+  if (!SMTP_HOST || !SMTP_USER || !SMTP_PASS) {
+    console.log(`[email] SMTP not configured — cannot send to ${to}`);
+    return { sent: false, reason: "not_configured" };
+  }
+
+  try {
+    const transporter = nodemailer.createTransport({
+      host: SMTP_HOST,
+      port: Number(SMTP_PORT) || 587,
+      secure: Number(SMTP_PORT) === 465,
+      auth: { user: SMTP_USER, pass: SMTP_PASS },
+    });
+
+    await transporter.sendMail({
+      from: `"NBNZIA Admin" <${process.env.EMAIL_FROM}>`,
+      to,
+      subject: subject || "Message from NBNZIA",
+      text: message,
+      html: `<p>${message.replace(/\n/g, "<br/>")}</p>`,
+    });
+
+    return { sent: true };
+  } catch (err) {
+    console.error("[email] Failed to send custom email:", err.message);
+    return { sent: false, reason: "send_failed" };
+  }
+}
+
+module.exports = { sendContactNotification, sendOtpEmail, sendCustomEmail };

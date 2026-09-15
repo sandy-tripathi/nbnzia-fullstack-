@@ -31,14 +31,24 @@ export function useAdminAuth() {
     refresh();
   }, [refresh]);
 
-  const login = useCallback(async (email: string, password: string) => {
+    const login = useCallback(async (email: string, password: string) => {
     try {
-      const data = await api.post<AdminUser>('/api/auth/login', { email, password });
+      await api.post('/api/auth/login', { email, password });
+      return { ok: true as const };
+    } catch (err) {
+      const message = err instanceof ApiRequestError ? err.message : 'Login failed';
+      return { ok: false as const, message };
+    }
+  }, []);
+
+  const verifyOtp = useCallback(async (email: string, otp: string) => {
+    try {
+      const data = await api.post<AdminUser>('/api/auth/verify-otp', { email, otp });
       setAdmin(data);
       setStatus('authenticated');
       return { ok: true as const };
     } catch (err) {
-      const message = err instanceof ApiRequestError ? err.message : 'Login failed';
+      const message = err instanceof ApiRequestError ? err.message : 'OTP verification failed';
       return { ok: false as const, message };
     }
   }, []);
@@ -52,5 +62,5 @@ export function useAdminAuth() {
     }
   }, []);
 
-  return { status, admin, login, logout, refresh };
+    return { status, admin, login, logout, refresh, verifyOtp };
 }

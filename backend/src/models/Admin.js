@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
+const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
 
 const AdminSchema = new mongoose.Schema(
   {
@@ -16,10 +16,18 @@ const AdminSchema = new mongoose.Schema(
     },
     name: {
       type: String,
-      default: 'Admin',
+      default: "Admin",
+    },
+    otp: {
+      type: String,
+      default: null,
+    },
+    otpExpiry: {
+      type: Date,
+      default: null,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 AdminSchema.methods.comparePassword = function comparePassword(candidate) {
@@ -30,4 +38,4 @@ AdminSchema.statics.hashPassword = function hashPassword(plain) {
   return bcrypt.hash(plain, 10);
 };
 
-module.exports = mongoose.model('Admin', AdminSchema);
+module.exports = mongoose.model("Admin", AdminSchema);

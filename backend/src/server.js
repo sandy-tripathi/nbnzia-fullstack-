@@ -1,6 +1,6 @@
-require('dotenv').config();
-const app = require('./app');
-const connectDB = require('./config/db');
+require("dotenv").config();
+const app = require("./app");
+const connectDB = require("./config/db");
 
 const PORT = process.env.PORT || 5000;
 
@@ -11,6 +11,6 @@ const PORT = process.env.PORT || 5000;
   });
 })();
 
-process.on('unhandledRejection', (err) => {
-  console.error('Unhandled promise rejection:', err);
+process.on("unhandledRejection", (err) => {
+  console.error("Unhandled promise rejection:", err);
 });
