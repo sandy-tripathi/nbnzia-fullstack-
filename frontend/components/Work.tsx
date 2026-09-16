@@ -3,7 +3,10 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { api, ApiRequestError } from '@/lib/api';
+import { useCardStackScroll } from '@/lib/useScrollReveal';
 import type { Project } from '@/lib/types';
+
+
 
 function WorkSkeleton() {
   return (
@@ -46,8 +49,8 @@ function WorkSkeleton() {
 
 export default function Work() {
   const [projects, setProjects] = useState<Project[] | null>(null);
+  useCardStackScroll('.case-slide', [projects]);
   const [error, setError] = useState<string | null>(null);
-
   useEffect(() => {
     let cancelled = false;
 
@@ -101,6 +104,7 @@ export default function Work() {
           <div
             key={c._id}
             className="case-slide"
+            data-reveal
             style={{
               height: '100vh',
               background: c.bg,

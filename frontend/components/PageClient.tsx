@@ -2,6 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import Lenis from 'lenis';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useScrollReveal } from '@/lib/useScrollReveal';
 import LoadingScreen from './LoadingScreen';
 import Navbar       from './Navbar';
 import Hero         from './Hero';
@@ -19,6 +22,7 @@ const LOADER_FADE     = 600;
 
 export default function PageClient() {
   const [phase, setPhase] = useState<'loading' | 'hiding' | 'done'>('loading');
+  useScrollReveal();
 
   // Loader timing
   useEffect(() => {
@@ -27,22 +31,30 @@ export default function PageClient() {
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, []);
 
-  // Lenis smooth scroll (init after load completes so it doesn't fight the loader)
+  // Lenis smooth scroll, synced with GSAP ScrollTrigger
   useEffect(() => {
     if (phase !== 'done') return;
 
+    gsap.registerPlugin(ScrollTrigger);
+
     const lenis = new Lenis({ duration: 1.25, smoothWheel: true });
 
-    let rafId: number;
-    const raf = (time: number) => {
-      lenis.raf(time);
-      rafId = requestAnimationFrame(raf);
-    };
-    rafId = requestAnimationFrame(raf);
+    // Keep ScrollTrigger's calculations in sync with Lenis's virtual scroll
+    lenis.on('scroll', ScrollTrigger.update);
+
+    gsap.ticker.add((time) => {
+      lenis.raf(time * 1000);
+    });
+    gsap.ticker.lagSmoothing(0);
+
+    const refreshTimer = setTimeout(() => ScrollTrigger.refresh(), 400);
 
     return () => {
-      cancelAnimationFrame(rafId);
+      clearTimeout(refreshTimer);
       lenis.destroy();
+      gsap.ticker.remove((time) => {
+        lenis.raf(time * 1000);
+      });
     };
   }, [phase]);
 

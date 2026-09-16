@@ -6,7 +6,7 @@ export default function About() {
       style={{ background: 'var(--bg)', padding: '6rem 0 5rem' }}
     >
       <div className="u-container">
-        <div className="about-grid">
+        <div className="about-grid" data-reveal>
           {/* Left: tags */}
           <div className="about-tags u-copy-xxxs u-text-transform-uppercase">
             <p>

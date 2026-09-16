@@ -92,13 +92,14 @@ export default function Services() {
         )}
 
         {!error && services && services.length > 0 && (
-          <ul style={{ listStyle: 'none', padding: 0, margin: 0, borderBottom: '1px solid #333', position: 'relative' }}>
+          <ul style={{ listStyle: 'none', padding: 0, margin: 0, borderBottom: '1px solid #333', position: 'relative' }} data-reveal-group>
             {services.map((svc, i) => {
               const isOpen = openIndex === i;
               return (
                 <li
                   key={svc._id}
                   className="mwg035-li"
+                  data-revea-item
                   style={{
                     borderTop: '1px solid #333',
                     position: 'relative',

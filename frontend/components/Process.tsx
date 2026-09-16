@@ -73,6 +73,7 @@ export default function Process() {
       {/* Cards */}
       <div className="u-container" style={{ position: 'relative', zIndex: 1, width: '100%' }}>
         <div
+        data-reveal
           style={{
             display: 'flex',
             gap: '1.5rem',
@@ -84,7 +85,9 @@ export default function Process() {
             <div
               key={i}
               className="mwg043-card"
+              data-reveal-item
               style={{
+                transform: `rotate(${[-3, 1, -2][i % 3]}deg)`,
                 background: '#fff',
                 borderRadius: '1.25rem',
                 width: '22.5rem',

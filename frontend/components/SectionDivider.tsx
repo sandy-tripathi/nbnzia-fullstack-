@@ -10,13 +10,14 @@ interface SectionDividerProps {
 
 export default function SectionDivider({ label, curvedText, dark = false }: SectionDividerProps) {
   const svgRef = useRef<SVGSVGElement>(null);
+  const textPathRef = useRef<SVGTextPathElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const svgEl = svgRef.current;
-    if (!svgEl) return;
+    const textPathEl = textPathRef.current;
+    if (!svgEl || !textPathEl) return;
 
-    // Initial state: SVG below viewport
     svgEl.style.transform = 'translate(0, 100%) scale(1.1)';
 
     let ticking = false;
@@ -29,15 +30,19 @@ export default function SectionDivider({ label, curvedText, dark = false }: Sect
 
         const rect = container.getBoundingClientRect();
         const vh = window.innerHeight;
-        // Progress: 0 when container bottom enters view, 1 when container top leaves view
         const totalScroll = container.offsetHeight - vh;
         const scrolled = -rect.top;
         const progress = Math.max(0, Math.min(1, scrolled / totalScroll));
 
-        // SVG animates from below (100%) to above (-30%) as you scroll through
-        const yPercent = 100 - progress * 160; // 100 → -60
-        const scale = 1.1 - progress * 0.1;    // 1.1 → 1.0
+        // Vertical slide-in (unchanged)
+        const yPercent = 100 - progress * 160;
+        const scale = 1.1 - progress * 0.1;
         svgEl.style.transform = `translate(0, ${yPercent}%) scale(${scale})`;
+
+        // NEW: horizontal slide along the curve — text moves from right (90%) to left (10%)
+        const startOffset = 95 - progress * 90; // 95% → 5%
+        textPathEl.setAttribute('startOffset', `${startOffset}%`);
+
         ticking = false;
       });
     };
@@ -57,9 +62,7 @@ export default function SectionDivider({ label, curvedText, dark = false }: Sect
       style={{ background: bg, color: textColor, position: 'relative' }}
     >
       <div className="mwg032-pin-height" ref={containerRef}>
-        {/* Sticky container */}
         <div className="mwg032-container">
-          {/* Section label at top */}
           <div
             style={{
               position: 'absolute',
@@ -84,7 +87,6 @@ export default function SectionDivider({ label, curvedText, dark = false }: Sect
             <span>{'}'}</span>
           </div>
 
-          {/* Curved SVG text */}
           <div style={{ width: '100%', overflow: 'hidden', position: 'relative' }}>
             <svg
               ref={svgRef}
@@ -109,6 +111,7 @@ export default function SectionDivider({ label, curvedText, dark = false }: Sect
               />
               <text>
                 <textPath
+                  ref={textPathRef}
                   startOffset="50%"
                   textAnchor="middle"
                   href={`#${pathId}`}
